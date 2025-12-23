@@ -11,29 +11,33 @@ import re
 
 
 def _current_dir():
-    """Returns the full current working directory as the user would have used
+    '''
+    Returns the full current working directory as the user would have used
     in their shell (ie. without following symbolic links).
 
     With the introduction of Bash for Windows, we can't use the PWD environment
-    variable very easily. `os.sep` for windows is `\` but the PWD variable will
+    variable very easily. `os.sep` for windows is `\\` but the PWD variable will
     use `/`. So just always use the `os` functions for dealing with paths. This
     also is fine because the use of PWD below is done to avoid following
     symlinks, which Windows doesn't have.
 
     For non-Windows systems, prefer the PWD environment variable. Python's
-    `os.getcwd` function follows symbolic links, which is undesirable."""
+    `os.getcwd` function follows symbolic links, which is undesirable.
+    '''
     if os.name == "nt":
         return os.getcwd()
     return os.getenv("PWD") or os.getcwd()
 
 
 def get_valid_cwd():
-    """Determine and check the current working directory for validity.
+    '''
+    Determine and check the current working directory for validity.
 
     Typically, an directory arises when you checkout a different branch on git
     that doesn't have this directory. When an invalid directory is found, a
     warning is printed to the screen, but the directory is still returned
-    as-is, since this is what the shell considers to be the cwd."""
+    as-is, since this is what the shell considers to be the cwd.
+    '''
     try:
         cwd = _current_dir()
     except:
