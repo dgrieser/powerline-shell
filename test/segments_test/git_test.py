@@ -3,6 +3,7 @@ import mock
 import tempfile
 import shutil
 import sh
+import os
 import powerline_shell.segments.git as git
 from ..testing_utils import dict_side_effect_fn
 
@@ -16,12 +17,14 @@ class GitTest(unittest.TestCase):
         })
 
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         sh.git("init", ".")
 
         self.segment = git.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     def _add_and_commit(self, filename):

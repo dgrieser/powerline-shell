@@ -9,9 +9,11 @@ import powerline_shell as p
 class CwdTest(unittest.TestCase):
 
     def setUp(self):
+        self._old_cwd = os.getcwd()
         self.dirname = tempfile.mkdtemp()
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     @mock.patch('os.getenv')

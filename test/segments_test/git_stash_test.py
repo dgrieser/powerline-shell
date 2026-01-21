@@ -95,3 +95,23 @@ class GitStashTest(unittest.TestCase):
 
         expected_str = u' {} '.format(RepoStats.symbols["stash"])
         self.powerline.append.assert_called_once_with(expected_str, 222, 111)
+
+    def test_env_var_colors(self):
+        original_env = os.environ.copy()
+        try:
+            os.environ["PL_STASH_FG"] = "123"
+            os.environ["PL_STASH_BG"] = "234"
+            segment_def = {"bg_color": "$PL_STASH_BG", "fg_color": "$PL_STASH_FG"}
+            self.segment = git_stash.Segment(self.powerline, segment_def)
+
+            self._add_and_commit("foo")
+            self._overwrite_file("foo", "some new content")
+            self._stash()
+            self.segment.start()
+            self.segment.add_to_powerline()
+
+            expected_str = u' {} '.format(RepoStats.symbols["stash"])
+            self.powerline.append.assert_called_once_with(expected_str, "123", "234")
+        finally:
+            os.environ.clear()
+            os.environ.update(original_env)

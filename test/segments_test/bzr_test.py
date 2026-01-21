@@ -3,6 +3,7 @@ import mock
 import tempfile
 import shutil
 import sh
+import os
 import powerline_shell.segments.bzr as bzr
 from powerline_shell.utils import RepoStats
 from ..testing_utils import dict_side_effect_fn
@@ -28,15 +29,17 @@ class BzrTest(unittest.TestCase):
         })
 
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         sh.bzr("init-repo", ".")
         sh.mkdir("trunk")
-        sh.cd("trunk")
+        os.chdir("trunk")
         sh.bzr("init")
 
         self.segment = bzr.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     def _add_and_commit(self, filename):
@@ -45,9 +48,9 @@ class BzrTest(unittest.TestCase):
         sh.bzr("commit", "-m", "add file " + filename)
 
     def _checkout_new_branch(self, branch):
-        sh.cd("..")
+        os.chdir("..")
         sh.bzr("branch", "trunk", branch)
-        sh.cd(branch)
+        os.chdir(branch)
 
     @mock.patch("powerline_shell.utils.get_PATH")
     def test_bzr_not_installed(self, get_PATH):

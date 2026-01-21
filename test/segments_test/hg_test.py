@@ -3,6 +3,7 @@ import mock
 import tempfile
 import shutil
 import sh
+import os
 import powerline_shell.segments.hg as hg
 from powerline_shell.utils import RepoStats
 from ..testing_utils import dict_side_effect_fn
@@ -26,12 +27,14 @@ class HgTest(unittest.TestCase):
         })
 
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         sh.hg("init", ".")
 
         self.segment = hg.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     def _add_and_commit(self, filename):

@@ -3,6 +3,7 @@ import mock
 import tempfile
 import shutil
 import sh
+import os
 import powerline_shell.segments.fossil as fossil
 from powerline_shell.utils import RepoStats
 from ..testing_utils import dict_side_effect_fn
@@ -24,13 +25,15 @@ class FossilTest(unittest.TestCase):
         })
 
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         sh.fossil("init", "test.fossil")
         sh.fossil("open", "test.fossil")
 
         self.segment = fossil.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     def _add_and_commit(self, filename):

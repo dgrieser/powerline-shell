@@ -3,6 +3,7 @@ import unittest
 import shutil
 import mock
 import sh
+import os
 import powerline_shell.segments.svn as svn
 from ..testing_utils import dict_side_effect_fn
 
@@ -16,12 +17,14 @@ class SvnTest(unittest.TestCase):
         })
 
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         # sh.svn("init", ".")
 
         self.segment = svn.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     @mock.patch("powerline_shell.utils.get_PATH")
