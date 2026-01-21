@@ -26,8 +26,8 @@ class Segment(ThreadedSegment):
         if not self.stash_count:
             return
 
-        bg = self.powerline.theme.GIT_STASH_BG
-        fg = self.powerline.theme.GIT_STASH_FG
+        bg = self.segment_def.get("bg_color", self.powerline.theme.GIT_STASH_BG)
+        fg = self.segment_def.get("fg_color", self.powerline.theme.GIT_STASH_FG)
 
         sc = self.stash_count if self.stash_count > 1 else ''
         stash_str = u' {}{} '.format(sc, RepoStats.symbols['stash'])

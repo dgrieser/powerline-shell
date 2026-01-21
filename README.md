@@ -319,6 +319,11 @@ The options for the `time` segment are:
 
 - `format`: Format string as used by strftime function, e.g. `%H:%M`.
 
+The options for the `git_stash` segment are:
+
+- `fg_color`: Override the foreground color for the stash segment.
+- `bg_color`: Override the background color for the stash segment.
+
 ### Contributing new types of segments
 
 The `powerline_shell/segments` directory contains python scripts which are
