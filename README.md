@@ -93,7 +93,20 @@ install for just your user, if you'd like. But you may need to fiddle with your
 ```
 git clone https://github.com/b-ryan/powerline-shell
 cd powerline-shell
-python setup.py install
+python -m pip install .
+```
+
+- For editable installs during development:
+
+```
+python -m pip install -e .
+```
+
+- Python 2 users: use the legacy installer because modern build tools do not
+  support Python 2.
+
+```
+python2 setup.py install
 ```
 
 - Setup your shell prompt using the instructions for your shell below.
