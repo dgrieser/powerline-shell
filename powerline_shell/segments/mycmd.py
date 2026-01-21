@@ -10,14 +10,14 @@ class Segment(ThreadedSegment):
         if not cmd:
             self.output = None
             return
-        if isinstance(cmd, str):
-            args = shlex.split(cmd)
-        else:
-            args = cmd
         try:
+            if isinstance(cmd, str):
+                args = shlex.split(cmd)
+            else:
+                args = cmd
             self.output = subprocess.check_output(
                 args, stderr=subprocess.STDOUT).decode("utf-8").strip()
-        except (subprocess.CalledProcessError, OSError):
+        except (subprocess.CalledProcessError, OSError, ValueError, TypeError, UnicodeDecodeError):
             self.output = None
 
     def add_to_powerline(self):
