@@ -1,12 +1,24 @@
 import os
+import shlex
 import subprocess
 from ..utils import ThreadedSegment
 
 
 class Segment(ThreadedSegment):
     def run(self):
-        cmd = self.segment_def["command"]
-        self.output = subprocess.check_output(cmd).decode("utf-8").strip()
+        cmd = self.segment_def.get("command")
+        if not cmd:
+            self.output = None
+            return
+        if isinstance(cmd, str):
+            args = shlex.split(cmd)
+        else:
+            args = cmd
+        try:
+            self.output = subprocess.check_output(
+                args, stderr=subprocess.STDOUT).decode("utf-8").strip()
+        except (subprocess.CalledProcessError, OSError):
+            self.output = None
 
     def add_to_powerline(self):
         self.join()
