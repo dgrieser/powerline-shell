@@ -1,3 +1,4 @@
+import os
 import subprocess
 from ..utils import RepoStats, ThreadedSegment, get_git_subprocess_env
 
@@ -26,9 +27,20 @@ class Segment(ThreadedSegment):
         if not self.stash_count:
             return
 
-        bg = self.segment_def.get("bg_color", self.powerline.theme.GIT_STASH_BG)
-        fg = self.segment_def.get("fg_color", self.powerline.theme.GIT_STASH_FG)
+        bg = self.resolve_color(
+            self.segment_def.get("bg_color", self.powerline.theme.GIT_STASH_BG),
+            self.powerline.theme.GIT_STASH_BG,
+        )
+        fg = self.resolve_color(
+            self.segment_def.get("fg_color", self.powerline.theme.GIT_STASH_FG),
+            self.powerline.theme.GIT_STASH_FG,
+        )
 
         sc = self.stash_count if self.stash_count > 1 else ''
         stash_str = u' {}{} '.format(sc, RepoStats.symbols['stash'])
         self.powerline.append(stash_str, fg, bg)
+
+    def resolve_color(self, color, fallback):
+        if isinstance(color, str) and color.startswith('$'):
+            return os.getenv(color[1:].strip('{').strip('}'), fallback)
+        return color
