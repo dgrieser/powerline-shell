@@ -3,21 +3,26 @@ import mock
 import tempfile
 import shutil
 import sh
+import os
 import powerline_shell.segments.git_stash as git_stash
 from powerline_shell.utils import RepoStats
+from powerline_shell.themes.default import Color
 
 
 class GitStashTest(unittest.TestCase):
 
     def setUp(self):
         self.powerline = mock.MagicMock()
+        self.powerline.theme = Color
         self.dirname = tempfile.mkdtemp()
-        sh.cd(self.dirname)
+        self._old_cwd = os.getcwd()
+        os.chdir(self.dirname)
         sh.git("init", ".")
 
         self.segment = git_stash.Segment(self.powerline, {})
 
     def tearDown(self):
+        os.chdir(self._old_cwd)
         shutil.rmtree(self.dirname)
 
     def _add_and_commit(self, filename):
@@ -57,7 +62,9 @@ class GitStashTest(unittest.TestCase):
         self.segment.start()
         self.segment.add_to_powerline()
         expected = u' {} '.format(RepoStats.symbols["stash"])
-        self.assertEqual(self.powerline.append.call_args[0][0], expected)
+        self.powerline.append.assert_called_once_with(
+            expected, Color.GIT_STASH_FG, Color.GIT_STASH_BG
+        )
 
     def test_multiple_stashes(self):
         self._add_and_commit("foo")
@@ -75,3 +82,16 @@ class GitStashTest(unittest.TestCase):
         self.segment.add_to_powerline()
         expected = u' 3{} '.format(RepoStats.symbols["stash"])
         self.assertEqual(self.powerline.append.call_args[0][0], expected)
+
+    def test_override_colors(self):
+        segment_def = {"bg_color": 111, "fg_color": 222}
+        self.segment = git_stash.Segment(self.powerline, segment_def)
+
+        self._add_and_commit("foo")
+        self._overwrite_file("foo", "some new content")
+        self._stash()
+        self.segment.start()
+        self.segment.add_to_powerline()
+
+        expected_str = u' {} '.format(RepoStats.symbols["stash"])
+        self.powerline.append.assert_called_once_with(expected_str, 222, 111)
