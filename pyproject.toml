@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "powerline-shell"
+version = "0.7.0"
+description = "A pretty prompt for your shell"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Buck Ryan", email = "buck@buckryan.com" }]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/dgrieser/powerline-shell"
+Upstream = "https://github.com/b-ryan/powerline-shell"
+
+[project.scripts]
+powerline-shell = "powerline_shell:main"
+
+[tool.setuptools]
+packages = ["powerline_shell", "powerline_shell.segments", "powerline_shell.themes"]

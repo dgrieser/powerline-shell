@@ -24,7 +24,7 @@ RUN bzr whoami "root <root@example.com>" && \
     git config --global user.name "root"
 
 # COPY . ./
-# RUN ./setup.py install
+# RUN python -m pip install .
 
 ENV USER root
 

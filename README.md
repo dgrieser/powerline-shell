@@ -102,13 +102,6 @@ python -m pip install .
 python -m pip install -e .
 ```
 
-- Python 2 users: use the legacy installer because modern build tools do not
-  support Python 2.
-
-```
-python2 setup.py install
-```
-
 - Setup your shell prompt using the instructions for your shell below.
 
 ### Bash
