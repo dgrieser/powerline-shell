@@ -28,6 +28,7 @@ has no relation to powerline.
   - [Config File](#config-file)
   - [Adding, Removing and Re-arranging segments](#adding-removing-and-re-arranging-segments)
   - [Generic Segments](#generic-segments)
+  - [Segment Colors](#segment-colors)
   - [Segment Separator](#segment-separator)
   - [Themes](#themes)
   - [Segment Configuration](#segment-configuration)
@@ -77,6 +78,8 @@ setting your $TERM to `xterm-256color`.
     commit](https://github.com/milkbikis/powerline-shell/commit/2a84ecc) in
     your copy.
 
+powerline-shell requires Python 3.8 or newer.
+
 - Install using pip:
 
 ```
@@ -88,10 +91,12 @@ pip install powerline-shell
 install for just your user, if you'd like. But you may need to fiddle with your
 `PATH` to get this working properly.*)
 
-- Or, install from the git repository:
+- Or, install from the git repository (this fork contains the `mycmd`
+  segment and the configurable segment colors described below, which are not
+  part of the release on PyPI):
 
 ```
-git clone https://github.com/b-ryan/powerline-shell
+git clone https://github.com/dgrieser/powerline-shell
 cd powerline-shell
 python -m pip install .
 ```
@@ -238,6 +243,54 @@ For example, your config could look like this:
 }
 ```
 
+`mycmd` works like `stdout`, but is more forgiving: `command` may be given as
+a list or as a single string, which is split like a shell would split it. If
+the command is missing, cannot be run or exits with a non-zero status, the
+segment is simply left out instead of breaking the prompt. Its colors support
+environment variables (see [Segment Colors](#segment-colors)):
+
+```
+{
+  "type": "mycmd",
+  "command": "kubectl config current-context",
+  "fg_color": "$POWERLINE_KUBE_FG",
+  "bg_color": "$POWERLINE_KUBE_BG"
+}
+```
+
+### Segment Colors
+
+The `git_stash`, `virtual_env` and `mycmd` segments accept `fg_color` and
+`bg_color` in their segment definition to override the theme colors. To use
+them, write the segment as an object instead of a plain name:
+
+```
+{
+  "segments": [
+    "cwd",
+    {
+      "type": "virtual_env",
+      "fg_color": "$POWERLINE_VENV_FG",
+      "bg_color": 35
+    },
+    {
+      "type": "git_stash",
+      "fg_color": 0,
+      "bg_color": 221
+    }
+  ]
+}
+```
+
+- A color is an [Xterm-256 color code](https://jonasjacek.github.io/colors/).
+- A value starting with `$` (`$NAME` or `${NAME}`) is read from that
+  environment variable, so you can keep your palette outside of the config file,
+  e.g. in a file sourced by your shell. If the variable is not set, the theme
+  color is used.
+- For `virtual_env`, the foreground color may carry text attributes separated
+  by colons, e.g. `221:bold` or `221:bold:italic`. Supported attributes are
+  `bold`, `dim`, `italic`, `underline`, `blink`, `reverse` and `strike`.
+
 ### Segment Separator
 
 By default, a unicode character (resembling the > symbol) is used to separate
@@ -324,11 +377,6 @@ The options for the `battery` segment are:
 The options for the `time` segment are:
 
 - `format`: Format string as used by strftime function, e.g. `%H:%M`.
-
-The options for the `git_stash` segment are:
-
-- `fg_color`: Override the foreground color for the stash segment.
-- `bg_color`: Override the background color for the stash segment.
 
 ### Contributing new types of segments
 
